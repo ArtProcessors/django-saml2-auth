@@ -107,7 +107,7 @@ def denied(r):
 
 
 def _create_new_user(username, email, firstname, lastname):
-    user = User.objects.create_user(username, email)
+    user = User.objects.create_user(email=email)
     user.first_name = firstname
     user.last_name = lastname
     user.groups = [Group.objects.get(name=x) for x in settings.SAML2_AUTH.get('NEW_USER_PROFILE', {}).get('USER_GROUPS', [])]
@@ -145,7 +145,7 @@ def acs(r):
     is_new_user = False
 
     try:
-        target_user = User.objects.get(username=user_name)
+        target_user = User.objects.get(email=user_email)
         if settings.SAML2_AUTH.get('TRIGGER', {}).get('BEFORE_LOGIN', None):
             import_string(settings.SAML2_AUTH['TRIGGER']['BEFORE_LOGIN'])(user_identity)
     except User.DoesNotExist:
