@@ -13,7 +13,8 @@ from saml2.config import Config as Saml2Config
 from django import get_version
 from pkg_resources import parse_version
 from django.conf import settings
-from django.contrib.auth.models import (User, Group)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.shortcuts import render
@@ -32,6 +33,8 @@ if parse_version(get_version()) >= parse_version('1.7'):
     from django.utils.module_loading import import_string
 else:
     from django.utils.module_loading import import_by_path as import_string
+
+User = get_user_model()
 
 
 def get_current_domain(r):
