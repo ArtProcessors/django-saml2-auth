@@ -96,7 +96,7 @@ def welcome(r):
     try:
         return render(r, 'django_saml2_auth/welcome.html', {'user': r.user})
     except TemplateDoesNotExist:
-        return HttpResponseRedirect(get_reverse('admin:index'))
+        return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
 
 
 def denied(r):
@@ -119,7 +119,7 @@ def _create_new_user(username, email, firstname, lastname):
 def acs(r):
     saml_client = _get_saml_client(get_current_domain(r))
     resp = r.POST.get('SAMLResponse', None)
-    next_url = r.session.get('login_next_url', get_reverse('admin:index'))
+    next_url = r.session.get('login_next_url', settings.LOGIN_REDIRECT_URL)
 
     if not resp:
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
@@ -175,13 +175,13 @@ def signin(r):
     except:
         import urllib.parse as _urlparse
         from urllib.parse import unquote
-    next_url = r.GET.get('next', get_reverse('admin:index'))
+    next_url = r.GET.get('next', settings.LOGIN_REDIRECT_URL)
 
     try:
         if 'next=' in unquote(next_url):
             next_url = _urlparse.parse_qs(_urlparse.urlparse(unquote(next_url)).query)['next'][0]
     except:
-        next_url = r.GET.get('next', get_reverse('admin:index'))
+        next_url = r.GET.get('next', settings.LOGIN_REDIRECT_URL)
 
     r.session['login_next_url'] = next_url
 
