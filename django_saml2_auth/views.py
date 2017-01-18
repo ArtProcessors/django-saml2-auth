@@ -141,6 +141,10 @@ def acs(r):
     user_first_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('first_name', 'FirstName')][0]
     user_last_name = user_identity[settings.SAML2_AUTH.get('ATTRIBUTES_MAP', {}).get('last_name', 'LastName')][0]
 
+    userid = None
+    if 'userid' in user_identity.keys():
+        userid = user_identity['userid'][0]
+
     target_user = None
     is_new_user = False
 
@@ -161,6 +165,9 @@ def acs(r):
         login(r, target_user)
     else:
         return HttpResponseRedirect(get_reverse([denied, 'denied', 'django_saml2_auth:denied']))
+
+    if userid is not None:
+        r.session['saml_userid'] = userid
 
     if is_new_user:
         try:
